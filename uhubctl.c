@@ -206,6 +206,7 @@ static int opt_delay  = 2;
 static int opt_repeat = 1;
 static int opt_wait   = 20; /* wait before repeating in ms */
 static int opt_exact  = 0;  /* exact location match - disable USB3 duality handling */
+static int opt_nostatus = 0;  /* not printing the port status to cut the execution time */
 static int opt_reset  = 0;  /* reset hub after operation(s) */
 
 static const struct option long_options[] = {
@@ -217,6 +218,7 @@ static const struct option long_options[] = {
     { "repeat",   required_argument, NULL, 'r' },
     { "wait",     required_argument, NULL, 'w' },
     { "exact",    no_argument,       NULL, 'e' },
+    { "nostatus", no_argument,       NULL, 'N' },
     { "reset",    no_argument,       NULL, 'R' },
     { "version",  no_argument,       NULL, 'v' },
     { "help",     no_argument,       NULL, 'h' },
@@ -239,6 +241,7 @@ static int print_usage()
         "--delay,    -d - delay for cycle action [%d sec].\n"
         "--repeat,   -r - repeat power off count [%d] (some devices need it to turn off).\n"
         "--exact,    -e - exact location (no USB3 duality handling).\n"
+	"--nostatus, -N - don't print the port status to shave the time. \n"
         "--reset,    -R - reset hub after each power-on action, causing all devices to reassociate.\n"
         "--wait,     -w - wait before repeat power off [%d ms].\n"
         "--version,  -v - print program version.\n"
@@ -654,7 +657,7 @@ int main(int argc, char *argv[])
     int option_index = 0;
 
     for (;;) {
-        c = getopt_long(argc, argv, "l:n:a:p:d:r:w:hveR",
+        c = getopt_long(argc, argv, "l:n:a:p:d:r:w:hveRN",
             long_options, &option_index);
         if (c == -1)
             break;  /* no more options left */
@@ -711,6 +714,9 @@ int main(int argc, char *argv[])
         case 'e':
             opt_exact = 1;
             break;
+	case 'N':
+	    opt_nostatus = 1;
+	    break;
         case 'R':
             opt_reset = 1;
             break;
@@ -801,10 +807,12 @@ int main(int argc, char *argv[])
         for (i=0; i<hub_count; i++) {
             if (hubs[i].actionable == 0)
                 continue;
-            printf("Current status for hub %s [%s]\n",
+	    if (!opt_nostatus){
+		printf("Current status for hub %s [%s]\n",
                 hubs[i].location, hubs[i].description
-            );
-            print_port_status(&hubs[i], opt_ports);
+           	);
+            	print_port_status(&hubs[i], opt_ports);
+	    }
             if (opt_action == POWER_KEEP) { /* no action, show status */
                 continue;
             }
@@ -851,11 +859,12 @@ int main(int argc, char *argv[])
                 printf("Sent power %s request\n",
                     request == LIBUSB_REQUEST_CLEAR_FEATURE ? "off" : "on"
                 );
-                printf("New status for hub %s [%s]\n",
-                    hubs[i].location, hubs[i].description
-                );
-                print_port_status(&hubs[i], opt_ports);
-
+		if (!opt_nostatus){
+                	printf("New status for hub %s [%s]\n",
+                    	hubs[i].location, hubs[i].description
+                	);
+                	print_port_status(&hubs[i], opt_ports);
+		}
                 if (k == 1 && opt_reset == 1) {
                     printf("Resetting hub...\n");
                     rc = libusb_reset_device(devh);
