@@ -624,21 +624,68 @@ static int usb_find_hubs()
                 continue;
 
             /* Provisionally we choose this one as dual: */
-            if (match < 0 && !hubs[j].actionable)
-                match = j;
+//            if (match < 0 && !hubs[j].actionable)
+//                match = j;
 
             /* But if there is exact port path match,
              * we prefer it (true for Linux but not Mac):
              */
-            char *p1 = strchr(hubs[i].location, '-');
-            char *p2 = strchr(hubs[j].location, '-');
-            if (p1 && p2 && strcasecmp(p1, p2)==0) {
+//            char *p1 = strchr(hubs[i].location, '-');
+//            char *p2 = strchr(hubs[j].location, '-');
+//            if (p1 && p2 && strcasecmp(p1, p2)==0) {
+//                match = j;
+//                break;
+
+
+// HACK to get the proper usb2/3 match.
+             char buf1[MAX_HUBS], buf2[MAX_HUBS];
+             strcpy(buf1, hubs[i].location);
+             strcpy(buf2, hubs[j].location);
+//             printf("hubs[i].location: %s |", hubs[i].location);
+//             printf("hubs[j].location: %s\n", hubs[j].location);
+             char *p1 = strtok(buf1, "-");
+             char *arr1[2]; 
+             int l = 0;
+             for (l=0; l<2; l++)
+             {
+                 arr1[l] = p1;
+                 p1 = strtok(NULL, "-");
+             }
+
+             char *p2 = strtok(buf2, "-");
+             char *arr2[2];
+             l = 0;
+             for (l=0; l<2; l++)
+             {
+                 arr2[l] = p2;
+                 p2 = strtok(NULL, "-");
+             }
+  
+            if (strlen(opt_location)>0){
+
+             if (arr1[0] && arr2[0] && arr1[1] && arr2[1] && strcasecmp(arr1[1], arr2[1])==0 && atoi(arr1[0])-1 == atoi(arr2[0])){
                 match = j;
                 break;
+             }
+            } else {
+            char *p3 = strchr(hubs[i].location, '-');
+            char *p4 = strchr(hubs[j].location, '-');
+            if (p3 && p4 && strcasecmp(p3, p4)==0) {
+                match = j;
+                break;
+               }
             }
         }
         if (match >= 0)
             hubs[match].actionable = 1;
+//            printf("strlen(opt_location): %d\n", strlen(opt_location)>0);
+            if (strlen(opt_location)>0){
+                hub_phys_count++;
+                break;
+}
+//            else{
+//                printf("not break\n"); 
+//}   
     }
     if (perm_ok == 0 && hub_phys_count == 0) {
         return LIBUSB_ERROR_ACCESS;
@@ -854,7 +901,7 @@ int main(int argc, char *argv[])
                 printf("New status for hub %s [%s]\n",
                     hubs[i].location, hubs[i].description
                 );
-                print_port_status(&hubs[i], opt_ports);
+                //print_port_status(&hubs[i], opt_ports);
 
                 if (k == 1 && opt_reset == 1) {
                     printf("Resetting hub...\n");
