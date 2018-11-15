@@ -19,21 +19,28 @@ uhub() {
                 $cmd
 }
 
+cycle_hub() {
+	local usb3_hub=${1:?}
+	#HACK: The corresponding USB2 device name is "-1" from the USB3's name (e.g. if USB3's name is "10-4", the corresponding USB2's name is "9-4".
+	arr_usb3_hub=($(echo $usb3_hub | tr "-" " "))
+	usb2_hub="$((arr_usb3_hub[1]-1))-$arr_usb3_hub[2]"
+	
+	#HACK: Need to turn off usb2 first and turn on last to avoid unnecessary wait
+	uhub off $usb2_hub
+	uhub off $usb3_hub
+	uhub on $usb3_hub
+	uhub on $usb2_hub
+}
+
+
 cycle() {
         lsusb | grep Intel
 
-	local usb3_hub
-        for usb3_hub in $hubs; do
-		#HACK: The corresponding USB2 device name is "-1" from the USB3's name (e.g. if USB3's name is "10-4", the corresponding USB2's name is "9-4".
-		arr_usb3_hub=($(echo $usb3_hub | tr "-" " "))
-		usb2_hub="$((arr_usb3_hub[1]-1))-$arr_usb3_hub[2]"
-		
-		#HACK: Need to turn off usb2 first and turn on last to avoid unnecessary wait
-		uhub off $usb2_hub
-		uhub off $usb3_hub
-		uhub on $usb3_hub
-		uhub on $usb2_hub
-	done		
+	local hub
+        for hub in $hubs; do
+		cycle_hub $hub &  # Run in parallel
+	done
+	wait		
 
         lsusb | grep Intel
 }
