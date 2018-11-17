@@ -13,8 +13,8 @@ uhub() {
                     -a $a
                     -R
                     -l $hub
-		         	-e
-		         	-N
+                    -e
+                    -N
                 )
                 $cmd
 }
@@ -36,7 +36,7 @@ cycle_hub() {
 cycle() {
     lsusb | grep Intel
 
-	local hub
+    local hub
     for hub in $hubs; do
 		cycle_hub $hub &  # Run in parallel
 	done
