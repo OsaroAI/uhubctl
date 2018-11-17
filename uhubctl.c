@@ -808,10 +808,10 @@ int main(int argc, char *argv[])
             if (hubs[i].actionable == 0)
                 continue;
 	    if (!opt_nostatus){
-		printf("Current status for hub %s [%s]\n",
+		    printf("Current status for hub %s [%s]\n",
                 hubs[i].location, hubs[i].description
            	);
-            	print_port_status(&hubs[i], opt_ports);
+            print_port_status(&hubs[i], opt_ports);
 	    }
             if (opt_action == POWER_KEEP) { /* no action, show status */
                 continue;

@@ -6,15 +6,15 @@ set -xv
 hubs=(2-6 2-5 2-4 2-3 10-4 8-4 6-4 4-4)
 
 uhub() {
-        local a=${1:?}
-        local hub=${2:?}
-                cmd=(
-                        uhubctl
-                        -a $a
-                        -R
-                        -l $hub
-			-e
-			-N
+    local a=${1:?}
+    local hub=${2:?}
+            cmd=(
+                    uhubctl
+                    -a $a
+                    -R
+                    -l $hub
+		         	-e
+		         	-N
                 )
                 $cmd
 }
@@ -34,15 +34,15 @@ cycle_hub() {
 
 
 cycle() {
-        lsusb | grep Intel
+    lsusb | grep Intel
 
 	local hub
-        for hub in $hubs; do
+    for hub in $hubs; do
 		cycle_hub $hub &  # Run in parallel
 	done
 	wait		
 
-        lsusb | grep Intel
+    lsusb | grep Intel
 }
 
 "$1" "${@:2}"
