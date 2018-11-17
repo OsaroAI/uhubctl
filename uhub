@@ -39,8 +39,8 @@ cycle() {
     local hub
     for hub in $hubs; do
 		cycle_hub $hub &  # Run in parallel
-	done
-	wait		
+    done
+    wait		
 
     lsusb | grep Intel
 }
