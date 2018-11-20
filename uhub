@@ -39,6 +39,7 @@ cycle_hub() {
 
 
 cycle() {
+    local rv=1
     for i in {1..$retry}
     do
         local hub
@@ -47,40 +48,16 @@ cycle() {
         done
         wait
     
-        sleep 1
+        uhubctl -N  # HACK: This is (sometimes) required to find the hub/port again.
     
-        uhubctl -N  # This is (sometimes) required to find the hub/port again.
-    
-        local found_all
-        [ $(lsusb | grep -c Intel) -eq $((${#hubs[@]} * $dev_per_hub)) ]
-        found_all=$?
-    
-        if [ $found_all -eq 1 ]
+        if [ $(lsusb | grep -c Intel) -eq $((${#hubs[@]} * $dev_per_hub)) ]
         then
-            exit 0
-        else
-            echo "Couldn't find all devices"
+            rv=0
+            break
         fi
     done
-    echo "Failed"
-    exit 1
-
-#    for i in {1..$num_to_check}
-#    do 
-#        if [ $(lsusb | grep -c Intel) -eq $((${#hubs[@]} * $dev_per_hub)) ] 
-#        then
-#            echo "Found all devices"
-#            break
-#        else
-#            if [ $i -eq $num_to_check ]
-#            then
-#                echo "Error: Couldn't find all devices for $(($num_to_check * $sleep_time))"
-#                exit 1
-#            fi
-#            echo "Couldn't find all devices. Sleep $sleep_time seconds"
-#            sleep $sleep_time
-#        fi
-#    done
+    return $rv
 }
+
 
 "$1" "${@:2}"
