@@ -1,9 +1,15 @@
 #!/bin/zsh
-set -eo pipefail
+set -euo pipefail
 set -xv
 
 #TODO: Manually configure these hub numbers (USB3)
-hubs=(2-6 2-5 2-4 2-3 10-4 8-4 6-4 4-4)
+hubs=(8-4)
+#hubs=(2-6 2-5 2-4 2-3 10-4 8-4 6-4 4-4)
+#TODO: Manually specify the number of device (RealSense) per hub
+dev_per_hub=2
+#TODO: Manually specify how many times we retry to check and sleep time
+num_to_check=10
+sleep_time=3
 
 uhub() {
     local a=${1:?}
@@ -34,17 +40,30 @@ cycle_hub() {
 
 
 cycle() {
-    lsusb | grep Intel
+    #lsusb | grep Intel
 
     local hub
     for hub in $hubs; do
         cycle_hub $hub &  # Run in parallel
     done
-    wait		
+    wait
 
-    sleep 10
-
-    lsusb | grep Intel
+    for i in {1..$num_to_check}
+    do 
+        if [ $(lsusb | grep -c Intel) -eq $((${#hubs[@]} * $dev_per_hub)) ] 
+        then
+            echo "Found all devices"
+            break
+        else
+            if [ $i -eq $num_to_check ]
+            then
+                echo "Error: Couldn't find all devices for $(($num_to_check * $sleep_time))"
+                exit 1
+            fi
+            echo "Couldn't find all devices. Sleep $sleep_time seconds"
+            sleep $sleep_time
+        fi
+    done
 }
 
 "$1" "${@:2}"
