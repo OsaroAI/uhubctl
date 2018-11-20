@@ -714,9 +714,9 @@ int main(int argc, char *argv[])
         case 'e':
             opt_exact = 1;
             break;
-	case 'N':
-	    opt_nostatus = 1;
-	    break;
+        case 'N':
+            opt_nostatus = 1;
+            break;
         case 'R':
             opt_reset = 1;
             break;
