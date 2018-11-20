@@ -42,6 +42,8 @@ cycle() {
     done
     wait		
 
+    sleep 5
+
     lsusb | grep Intel
 }
 
