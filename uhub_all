@@ -3,8 +3,7 @@ set -euo pipefail
 set -xv
 
 #TODO: Manually configure these hub numbers (USB3)
-hubs=(8-4)
-#hubs=(2-6 2-5 2-4 2-3 10-4 8-4 6-4 4-4)
+hubs=(2-6 2-5 2-4 2-3 10-4 8-4 6-4 4-4)
 #TODO: Manually specify the number of device (RealSense) per hub
 dev_per_hub=2
 #TODO: Manually specify how many times to retry power cycle
