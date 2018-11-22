@@ -9,7 +9,7 @@ uhub() {
     cmd=(
             uhubctl
             -a $a
-            -R
+            #-R  # Removed Reset, otherwise the command resets entire hub, not only the specified port.
             -l $hub
             -p $port
             -e
@@ -30,8 +30,14 @@ cycle() {
     uhub on $usb3_hub $port
     uhub on $usb2_hub $port
 
-    # To activate the hub properly, need to run uhubctl once
+    sleep 1
+    
+    # To activate the hub properly, need to run uhubctl once (Not entirely sure which is necessary)
+    #uhubctl -N
     uhubctl -N -l $usb3_hub -p $port -e 
+    #uhubctl -N -l $usb2_hub -p $port -e 
+    
+    sleep 1
 }
 
 "$1" "${@:2}"
