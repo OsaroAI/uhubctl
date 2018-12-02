@@ -11,10 +11,9 @@ http://www.gniibe.org/development/ac-power-control-by-USB-hub
 for Osaro
 =========
 - Run `make && sudo make install`.
-- Copy `uhub` to `/usr/loca/bin`.
-- Run `uhubctl` to get the status of each hub and port.
-- Run `uhub cycle` to powercycle. Please modify `hubs`(array of USB3 hubs) in `uhub` file manually based on your PC's setup. 
-
+- Copy `uhub_per_port` to `/usr/loca/bin`.
+- Run `uhubctl` to get the status/number of each hub and port.
+- Run `uhub_per_port cycle *USB3 HUB NUMBER* *USB2 HUB NUMBER* *PORT NUMBER*` to powercycle. 
 
 Compatible USB hubs
 ===================
