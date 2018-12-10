@@ -11,6 +11,7 @@ http://www.gniibe.org/development/ac-power-control-by-USB-hub
 for Osaro
 =========
 - Run `make && sudo make install`.
+- run `sudo chmod 4755 /usr/sbin/uhubctl`.
 - Copy `uhub_per_port` to `/usr/loca/bin`.
 - Run `uhubctl` to get the status/number of each hub and port.
 - Run `uhub_per_port cycle *USB3 HUB NUMBER* *USB2 HUB NUMBER* *PORT NUMBER*` to powercycle. 
